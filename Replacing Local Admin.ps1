@@ -14,7 +14,7 @@ New-LocalUser $admin -Password $secpassword -FullName "admin" -Description "loca
 #Add that user into the local admin group
 Add-LocalGroupMember -Group "Administrators" -Member "admin"
 
-#If the account has been successfully added, remvoe the users account
+#If the account has been successfully added, remove the users account
 
 If ($localadmins -contains $admin)
 {
