@@ -1,5 +1,5 @@
 echo "hi" >> "C:\temp\important_document.txt"
-Start-Process powershell.exe -nop -w hidden "C:\temp\important_document.txt"
+Start-Process powershell.exe "C:\temp\important_document.txt"
 
 
 
