@@ -25,7 +25,7 @@ $iprange = @(1..254)
 
 #------------end of scanner
 
-$m = (Test-WSMan -ComputerName machine-1 -ErrorAction SilentlyContinue)
+$m = (Test-WSMan -ComputerName machine-1 -ErrorAction SilentlyContinue) 
 
 $u = $morty
 $p = "P@ssw0rd"
