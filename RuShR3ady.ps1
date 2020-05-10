@@ -44,9 +44,8 @@ $mycredential = New-Object System.Management.Automation.PSCredential ($u, $secpa
     
     $subnetrange = $subnet.Substring(0,$subnet.IndexOf('.') + 1 + $subnet.Substring($subnet.IndexOf('.') + 1).IndexOf('.') + 3)
 
-    $isdot = $subnetrange.EndsWith('.')
-
-    if ($isdot -like "False"){$subnetrange = $subnetrange + '.'}
+    if ($isdot = $subnetrange.EndsWith('.') -eq $false){$subnetrange = $subnetrange + '.'}
+    
     
     $iprange = @(1..254)
 
