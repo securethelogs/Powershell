@@ -61,4 +61,28 @@ Set-Location C:\
 
 
 
+# Add an automation element to scan all DNS domains
+
+# Get Domains
+$doms = @((Get-DnsClientGlobalSetting).SuffixSearchList)
+$dcs = @()
+$adm = @()
+
+foreach ($d in $doms){
+
+# Get Domain Controller of Domain
+$dcs += (Get-ADDomainController -DomainName $d -Discover -NextClosestSite).HostName
+
+}
+
+foreach ($dc in $dcs){
+
+# Get the users for each domain
+$da = @(Get-ADGroupMember "Domain admins" -Server $dc)
+foreach ($i in $da){Get-ADUser $i -Properties Name, UserPrincipalname, PasswordLastSet,LastLogonDate -ErrorAction SilentlyContinue | Select Name, UserPrincipalname,PasswordLastSet, LastLogonDate}
+
+}
+
+
+
 
