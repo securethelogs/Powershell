@@ -1,4 +1,6 @@
-﻿Connect-SPOService https://*YOUR_COMPANY_DOMAIN*-admin.sharepoint.com/
+#Prereq: Install-Module -Name Microsoft.Online.SharePoint.PowerShell
+
+Connect-SPOService https://*YOUR_COMPANY_DOMAIN*-admin.sharepoint.com/
 
 $sites = @(Get-SPOSite -Filter {Status -eq "Active"} -Limit ALL  | select-Object URL)
 
