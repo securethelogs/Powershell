@@ -1,6 +1,6 @@
 ﻿Connect-SPOService https://*YOUR_COMPANY_DOMAIN*-admin.sharepoint.com/
 
-$sites = @(Get-SPOSite -Filter {Status -eq "Active"} | select-Object URL)
+$sites = @(Get-SPOSite -Filter {Status -eq "Active"} -Limit ALL  | select-Object URL)
 
 $Output = "C:\Temp\Sharepoint_Everyone.txt"
 
