@@ -90,7 +90,7 @@ $i = @($t -split "`n")
                       
             if ($r[5] -eq "T"){$protocol = "TCP" }else{$protocol = "UDP"}
             if ($r[6] -eq "I"){$direction = "Inbound"  }else{$direction = "Outbound"  }
-            if ($r[7] -eq 'A"'){$action = "Allowed"}else{$action = "Denied"}
+            if ($r[7] -like '*A*'){$action = "Allowed"}else{$action = "Denied"}
 
             
             if ($filter -eq "y"){
