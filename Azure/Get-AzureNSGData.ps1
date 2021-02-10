@@ -27,6 +27,10 @@ param (
     [char]
     $ActionFilter,
 
+    [ValidateSet('I','O')]
+    [char]
+    $FlowFilter,
+
     [switch]
     $Progress
 
@@ -73,6 +77,9 @@ foreach ($Record in $Records) {
             # Check filters and continue if a filter is not matched
             if ($PSBoundParameters.Keys -Contains 'ActionFilter') {
                 $FlowTuples = $FlowTuples.Where({$_ -match "^.*,$ActionFilter,.*"})
+            }
+            if ($PSBoundParameters.Keys -Contains 'FlowFilter') {
+                $FlowTuples = $FlowTuples.Where({$_ -match "^.*,$FlowFilter,.*"})
             }
             if ($PSBoundParameters.Keys -Contains 'SrcIPFilter') {
                 $FlowTuples = $FlowTuples.Where({$_ -match "^\d+,$SrcIPFilter,.*"})
