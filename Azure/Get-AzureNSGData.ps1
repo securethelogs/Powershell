@@ -121,7 +121,7 @@ foreach ($Record in $Records) {
                         Action = $Action
                         Rule = $Rule
                     }
-                ) > null
+                ) > $null
             }
             
         }
