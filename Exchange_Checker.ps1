@@ -63,6 +63,7 @@ if ($asp -eq $null){ Write-Host "No ASPX files found" -ForegroundColor "Green" }
 
     }
 
+Write-Output ""
 Write-Host "Searching in: C:\Program Files\Microsoft\Exchange Server\V15\FrontEnd\HttpProxy\owa\auth\"
 
 $asp = @(get-childitem -include "*.aspx" -recurse "C:\Program Files\Microsoft\Exchange Server\V15\FrontEnd\HttpProxy\owa\auth\" -ErrorAction SilentlyContinue).Name
