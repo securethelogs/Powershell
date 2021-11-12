@@ -11,11 +11,11 @@ $nofalcon = @()
 $family = @()
 
 
-# -- Falcon MalQuery --
+# -- Falcon MalQuery (Required) --
 $clientid = ""
 $csecret = ""
 
-# -- Hybrid-Analysis --
+# -- Hybrid-Analysis (Optional) --
 
 $haapikey = ""
 
