@@ -1,9 +1,24 @@
-﻿<# API Guide: https://falcon.crowdstrike.com/documentation/46/crowdstrike-oauth2-based-apis #>
+<# API Guide: https://falcon.crowdstrike.com/documentation/46/crowdstrike-oauth2-based-apis
+   Access rights: Read - Indicators and Actors
+   Hybrid-Analysis API is optional.
+ #>
 
+# -- Global --
 $results = @()
+$hbresults = @()
 $noauth = 0
-$clientid = "Make sure you enter"
-$csecret = "Make sure you enter"
+$nofalcon = @()
+$family = @()
+
+
+# -- Falcon MalQuery --
+$clientid = ""
+$csecret = ""
+
+# -- Hybrid-Analysis --
+
+$haapikey = ""
+
 
 $logo = @('
 
@@ -60,7 +75,6 @@ foreach ($hb in $hashbrowns){
 
 $errc = 0
 
-
     $paramhash = @{
         URI = "https://api.crowdstrike.com/malquery/entities/metadata/v1?ids=$hb"
         Method = 'GET'
@@ -74,19 +88,187 @@ $errc = 0
 
     } # Params 
 
-$res = try { Invoke-RestMethod @paramhash } catch { $errc = 1; Write-Host "Error: Hash $hb may be incorrect or not supported" -ForegroundColor Red }
+$res = try { Invoke-RestMethod @paramhash } catch { $errc = 1; Write-Host "Error: Hash $hb may be incorrect or not supported" -ForegroundColor Red ; $nofalcon += $hb }
 
 
     if ($errc -ne 1){
 
-        if ($res.resources -eq $null){ Write-Host "Hash: $hb was not found" -ForegroundColor Yellow } else { $results += $res.resources }
+        if ($res.resources -eq $null){ Write-Host "Hash: $hb was not found" -ForegroundColor Yellow; $nofalcon += $hb } else { $results += $res.resources
+        if ($res.resources.family){$family += ($res.resources.family)} }
 
     } # No Error
 
  } # Hashbrowns
 
 
- if ($results -ne $null){ $results | Format-Table first_seen,label,family,filetype,sha256,sha1,md5 }
+ if ($results -ne $null){ 
+ 
+ $results | Format-Table first_seen,label,family,filetype,sha256,sha1,md5 
+
+ Write-Output " ------  "
+ Write-Output ""
+ 
+ }
+
+ if ($family -ne $null){
+
+ Write-Host "Status: Malware Family found!" -ForegroundColor Green
+ 
+    foreach ($fam in $family){
+
+    Write-Output ""
+    Write-Host "[*] Searching for family: $fam"
+    Write-Output ""
+
+    $uri = ("https://api.crowdstrike.com/intel/queries/actors/v1?filter=kill_chain.installation%3A'" + $fam + "'").ToLower()
+
+    $param = @{
+        URI = $uri
+        Method = 'GET'
+        Headers = @{
+                Authorization = "Bearer $token"  
+                "Content-Type" = "application/json" 
+                }
+
+    } # Params 
+
+try { 
+
+$r = Invoke-RestMethod @param
+$actids = @($r.resources)
+
+ } catch { Write-Host "Error: Something went wrong when querying actors ! " -ForegroundColor Red} 
+
+
+if ($actids){
+
+foreach ($aid in $actids){
+
+    $param = @{
+        URI = "https://api.crowdstrike.com/intel/entities/actors/v1?ids=$aid"
+        Method = 'GET'
+        Headers = @{
+                Authorization = "Bearer $token"  
+                "Content-Type" = "application/json" 
+                }
+
+    } # Params 
+
+try{ $r = Invoke-RestMethod @param } catch { Write-Host "Error: Something went wrong when querying actors ! " -ForegroundColor Red} 
+
+## start output
+
+Write-Output ""
+Write-Host "ID: " -NoNewline; Write-Host ($r.Resources.id)
+Write-Host "Name: " -NoNewline; Write-Host ($r.Resources.name) -ForegroundColor Yellow
+Write-Host "KnownAs: "-NoNewline; Write-Host ($r.resources.known_as) -ForegroundColor Yellow
+if (($r.Resources.active) -eq $false){ Write-Host "Active: " -NoNewline; Write-Host ($r.Resources.active) -ForegroundColor Red } else { Write-Host "Active: " -NoNewline; Write-Host ($r.Resources.active) -ForegroundColor Green }
+Write-Host "Region: " -NoNewline; Write-Host ($r.Resources.region.value)
+Write-Host "URL: "($r.resources.url)
+
+Write-Output ""
+Write-Host "Desc: "($r.Resources.short_description)
+
+## End output
+
+Write-Output ""
+Write-Output "  --------    "
+Write-Output ""
+
+
+} 
+
+
+} else { 
+
+    Write-Host "Family: $fam has not results ..." -ForegroundColor Yellow 
+    Write-Output ""
+    Write-Output "  --------    "
+    Write-Output ""
+
+} #foreach actor
+
+ 
+    
+    }
+ 
+ }
+
+
+    if ($haapikey -ne ""){
+
+    Write-Output ""
+
+
+    $who = @{
+        URI = "https://www.hybrid-analysis.com/api/v2/key/current"
+        Method = 'GET'
+        Headers = @{
+        'accept' = 'application/json'
+        'user-agent' = 'Falcon Sandbox'
+        'api-key' = "$haapikey"   
+        }
+
+    }
+
+    try {$who = Invoke-RestMethod @who}catch{ Write-Host "[!} Failed to Auth...." -ForegroundColor Red}
+
+    Write-Host "Hybrid-Analysis Key Detected" -ForegroundColor Green -NoNewline
+
+    if ($who -ne $null){Write-Host ("    |   User: " + $who.user.email)}
+    
+    Write-Output ""
+
+
+    foreach ($hb in $hashbrowns){
+
+    $hash = "hash=" + $hb
+    
+       $hbparam = @{
+        URI = "https://www.hybrid-analysis.com/api/v2/search/hash"
+        Method = 'POST'
+        Headers = @{
+        'accept' = 'application/json'
+        'user-agent' = 'Falcon Sandbox'
+        'Content-Type' = 'application/x-www-form-urlencoded'
+        'api-key' = "$haapikey"   
+        }
+            Body =  $hash
+
+    }
+
+    
+    try {$res = Invoke-RestMethod @hbparam} catch {Write-Host "Error: Hash $hb may be incorrect or not supported" -ForegroundColor Red}
+    
+    if ($res.sha256 -eq $null){Write-Host "Hash: $hb was not found" -ForegroundColor Yellow} else {
+        
+        $res | Add-Member -Type NoteProperty -Name 'VirusTotal' -Value ("https://www.virustotal.com/gui/file/" + $hb)
+    
+        $hbresults += $res
+    
+    
+        }  
+
+ 
+    }
+
+    if ($hbresults -ne $null){
+    
+    
+    
+    $hbresults | Format-Table Sha256, verdict, threat_score, av_detect, vx_family, environment_description, VirusTotal
+
+
+    }
+ 
+ 
+ } else { 
+
+       Write-Output ""
+       Write-Host "[!] No Hybrid-Analysis API Found.... skipping " -ForegroundColor Red 
+       Write-Output ""
+
+        }
 
 # -- File Validation --
 
